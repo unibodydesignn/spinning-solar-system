@@ -32,6 +32,7 @@ void Sun::init() {
     float x, y, z, xy;
     float sectorAngle, stackAngle;
 
+    // Initializing vertices
     for(int i = 0; i < stackCount; ++i) {
         stackAngle = pi / 2 - i * stackStep;
         xy = radius * cosf(stackAngle);
@@ -52,9 +53,8 @@ void Sun::init() {
             v.xy = xy;
             vertices->push_back(v);
         }
-
-
     }
+    // Initliazed vertices
 
 }
 
