@@ -2,6 +2,8 @@
 #include <vector>
 #include <stdlib.h>
 #include <cmath>
+#include "Angel.h"
+#include "Loader.h"
 
 #define PI 3.14151967
 
@@ -21,8 +23,8 @@ private:
     float sectorCount;
     float stackCount;
 
-    vector<vertex> *vertices;
-    vector<vertex> *indices;
+    vector<vec3> *vertices;
+    vector<vec3> *indices;
 
     GLuint vao;
     GLuint vbo;

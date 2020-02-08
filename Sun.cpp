@@ -7,8 +7,8 @@ Sun::Sun() {
     sectorCount = 144;
     stackCount = 48;
 
-    vertices = new vector<vertex>(100);
-    indices = new vector<vertex>(100);
+    vertices = new vector<vec3>();
+    indices = new vector<vec3>();
 }
 
 Sun::~Sun() {
@@ -46,15 +46,51 @@ void Sun::init() {
             // vertex position
             x = xy * cosf(sectorAngle);             // r * cos(u) * cos(v)
             y = xy * sinf(sectorAngle);
-            vertex v;
-            v.x = x;
-            v.y = y;
-            v.z = z;
-            v.xy = xy;
-            vertices->push_back(v);
+        
+            vertices->push_back(x);
+            vertices->push_back(y);
+            vertices->push_back(z);
+            vertices->push_back(xy);
+
         }
     }
     // Initliazed vertices
+
+    // indices
+    //  k1--k1+1
+    //  |  / |
+    //  | /  |
+    //  k2--k2+1
+    unsigned int k1, k2;
+    for(int i = 0; i < stackCount; ++i)
+    {
+        k1 = i * (sectorCount + 1);     // beginning of current stack
+        k2 = k1 + sectorCount + 1;      // beginning of next stack
+
+        for(int j = 0; j < sectorCount; ++j, ++k1, ++k2)
+        {
+            // 2 triangles per sector excluding 1st and last stacks
+            if(i != 0)
+            {
+                addIndices(k1, k2, k1+1);   // k1---k2---k1+1
+            }
+
+            if(i != (stackCount-1))
+            {
+                addIndices(k1+1, k2, k2+1); // k1+1---k2---k2+1
+            }
+
+            // vertical lines for all stacks
+            lineIndices.push_back(k1);
+            lineIndices.push_back(k2);
+            if(i != 0)  // horizontal lines except 1st stack
+            {
+                lineIndices.push_back(k1);
+                lineIndices.push_back(k1 + 1);
+            }
+        }
+    }
+
 
 }
 
