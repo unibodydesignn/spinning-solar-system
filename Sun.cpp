@@ -1,8 +1,11 @@
 #include "sun.h"
 
+using namespace std;
+
 Sun::Sun() {
     vao = 0;
     vbo = 0;
+    ibo = 0;
     radius = 696;
     sectorCount = 144;
     stackCount = 48;
@@ -14,6 +17,7 @@ Sun::Sun() {
 Sun::~Sun() {
     vao = 0;
     vbo = 0;
+    ibo = 0;
     radius = 0;
     sectorCount = 0;
     stackCount = 0;
@@ -23,79 +27,27 @@ Sun::~Sun() {
 }
 
 void Sun::init() {
+    
+    loader = new Loader();
+    loader->initializeObject("/Users/unibodydesignn/Desktop/sun.obj", *vertices, *indices);
+    loader->initializeShaders("/Users/unibodydesignn/Desktop/spinning-solar-system/vertex.shader","/Users/unibodydesignn/Desktop/spinning-solar-system/fragment.shader");
 
-    const double pi = acos(-1);
-
-    float sectorStep = 2 * pi / sectorCount;
-    float stackStep = pi / stackCount;
-
-    float x, y, z, xy;
-    float sectorAngle, stackAngle;
-
-    // Initializing vertices
-    for(int i = 0; i < stackCount; ++i) {
-        stackAngle = pi / 2 - i * stackStep;
-        xy = radius * cosf(stackAngle);
-        z = radius * sinf(stackAngle);
-
-        // add sectorCount + 1 vertices per stack
-        for(int j = 0; j <= sectorCount; ++j)
-        {
-            sectorAngle = j * sectorStep;           // starting from 0 to 2pi
-
-            // vertex position
-            x = xy * cosf(sectorAngle);             // r * cos(u) * cos(v)
-            y = xy * sinf(sectorAngle);
+    glGenVertexArraysAPPLE(1, &vao);
+    glBindVertexArrayAPPLE(vao);
         
-            vertices->push_back(x);
-            vertices->push_back(y);
-            vertices->push_back(z);
-            vertices->push_back(xy);
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(vec3), &vertices[0], GL_STATIC_DRAW);
 
-        }
-    }
-    // Initliazed vertices
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * 9, indices, GL_STATIC_DRAW);
 
-    // indices
-    //  k1--k1+1
-    //  |  / |
-    //  | /  |
-    //  k2--k2+1
-    unsigned int k1, k2;
-    for(int i = 0; i < stackCount; ++i)
-    {
-        k1 = i * (sectorCount + 1);     // beginning of current stack
-        k2 = k1 + sectorCount + 1;      // beginning of next stack
-
-        for(int j = 0; j < sectorCount; ++j, ++k1, ++k2)
-        {
-            // 2 triangles per sector excluding 1st and last stacks
-            if(i != 0)
-            {
-                addIndices(k1, k2, k1+1);   // k1---k2---k1+1
-            }
-
-            if(i != (stackCount-1))
-            {
-                addIndices(k1+1, k2, k2+1); // k1+1---k2---k2+1
-            }
-
-            // vertical lines for all stacks
-            lineIndices.push_back(k1);
-            lineIndices.push_back(k2);
-            if(i != 0)  // horizontal lines except 1st stack
-            {
-                lineIndices.push_back(k1);
-                lineIndices.push_back(k1 + 1);
-            }
-        }
-    }
-
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
 
 }
 
 void Sun::draw() {
-
-
-
+    glDrawArrays(GL_LINES, 0, (int)vertices->size());
 }

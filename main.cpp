@@ -2,9 +2,20 @@
 #include <GLUT/glut.h>
 #include <GLFW/glfw3.h>
 
+#include "Angel.h"
+#include "CheckError.h"
+
+#include "sun.h"
+
 #define WW 1920
 #define WH 1080
 
+Sun *sun;
+
+void init() {
+    sun = new Sun();
+    sun->init();
+}
 
 void initializeSpaceLayout(void) {
     glViewport(0, 0, WW, WH);
@@ -17,7 +28,8 @@ void initializeSpaceLayout(void) {
 }
 
 void displaySystem() {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    sun->draw();
     glutSwapBuffers();
 }
 

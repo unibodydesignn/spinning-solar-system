@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <cmath>
 #include "Angel.h"
-#include "Loader.h"
+#include "loader.h"
 
 #define PI 3.14151967
 
@@ -28,6 +28,9 @@ private:
 
     GLuint vao;
     GLuint vbo;
+    GLuint ibo;
+    
+    Loader *loader;
 
 public:
     Sun();

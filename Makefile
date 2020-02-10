@@ -4,8 +4,8 @@ CFLAGS=-g -I/Users/unibodydesignn/Desktop/include
 OBJFILES = *.o
 TARGET = main
 
-main: main.o
-	$(CC) $@.o $(LDFLAGS) -o $@
+main: main.o Sun.o loader.o 
+	$(CC) $@.o Sun.o loader.o $(LDFLAGS) -o $@
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@ -w
