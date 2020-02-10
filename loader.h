@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <vector> 
 #include "mat.h"
+#include "vec.h"
 #include "Angel.h"
 
 using namespace std;

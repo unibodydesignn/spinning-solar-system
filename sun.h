@@ -1,7 +1,7 @@
 #include <GLUT/glut.h>
 #include <vector>
 #include <stdlib.h>
-#include <cmath>
+#include <vector>
 #include "Angel.h"
 #include "loader.h"
 
@@ -35,6 +35,7 @@ private:
 public:
     Sun();
     ~Sun();
+    void load(const char* path, std::vector<vec3> &out_vertices, std::vector<vec3> &out_normals);
     void init();
     void draw();
 };

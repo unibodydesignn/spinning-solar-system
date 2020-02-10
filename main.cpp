@@ -24,7 +24,8 @@ void initializeSpaceLayout(void) {
     glLoadIdentity();
     gluOrtho2D(0.0, (GLdouble)WW, 0.0, (GLdouble)WH);
 
-    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glEnable( GL_DEPTH_TEST );
+    glClearColor( 0.0, 0.0, 0.0, 1.0 );
 }
 
 void displaySystem() {
@@ -51,9 +52,13 @@ int main(int argc, char** argv) {
 
    glutInit(&argc, argv);
    glutInitDisplayMode(GLUT_DEPTH |GLUT_DOUBLE | GLUT_RGB);
+   glutInitDisplayMode(GLUT_3_2_CORE_PROFILE);
    glutInitWindowSize(WW, WH);
    glutInitWindowPosition(0,0);
    glutCreateWindow("Solar System");
+   init();
+   bool glewExperimental = GL_TRUE;
+
    initializeSpaceLayout();
    glutMouseFunc(controlSpaceWithMouse);
    glutDisplayFunc(displaySystem);

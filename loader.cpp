@@ -33,9 +33,11 @@ void Loader::initializeObject(const char* path,  std::vector<vec3> &out_vertices
                         temp_normals.push_back(normal);
                     } else if ( strcmp( lineHeader, "f" ) == 0 ){
                         std::string vertex1, vertex2, vertex3;
-                        unsigned int vertexIndex[3], normalIndex[3];
-                        fscanf(file, "%d//%d %d//%d %d//%d\n", &vertexIndex[0], &normalIndex[0], &vertexIndex[1], &normalIndex[1], &vertexIndex[2], &normalIndex[2] );
-                        
+                        unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+                        int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
+                        if (matches != 9)
+                            printf("not 9 \n");
+
                         vertexIndices.push_back(vertexIndex[0]);
                         vertexIndices.push_back(vertexIndex[1]);
                         vertexIndices.push_back(vertexIndex[2]);
@@ -47,11 +49,13 @@ void Loader::initializeObject(const char* path,  std::vector<vec3> &out_vertices
                 }
             }
             
+            printf("V beginning! %d\n", vertexIndices.size());
             for( unsigned int i=0; i<vertexIndices.size(); i++ ) {
-                unsigned int vertexIndex = vertexIndices[i];
+                 int vertexIndex = vertexIndices[i];
                 vec3 vertex = temp_vertices[ vertexIndex-1 ];
                 out_vertices.push_back(vertex);
             }
+            printf("V End!!!!!!!\n");
         }
 }
 
