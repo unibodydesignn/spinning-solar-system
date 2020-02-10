@@ -10,8 +10,9 @@ Sun::Sun() {
     sectorCount = 144;
     stackCount = 48;
 
-    vertices = new vector<vec3>();
-    indices = new vector<vec3>();
+    vertices = new vector<glm::vec3>();
+    indices = new vector<glm::vec3>();
+    shader = new Shader();
 }
 
 Sun::~Sun() {
@@ -26,10 +27,10 @@ Sun::~Sun() {
     delete indices;
 }
 
-void Sun::load(const char* path,  std::vector<vec3> &out_vertices,  std::vector<vec3> &out_normals) {
+void Sun::load(const char* path,  std::vector<glm::vec3> &out_vertices,  std::vector<glm::vec3> &out_normals) {
     std::vector< unsigned int > vertexIndices, normalIndices;
-        std::vector< vec3 > temp_vertices;
-        std::vector< vec3 > temp_normals;
+        std::vector< glm::vec3 > temp_vertices;
+        std::vector< glm::vec3 > temp_normals;
         
         FILE * file = fopen(path, "r");
         
@@ -46,11 +47,11 @@ void Sun::load(const char* path,  std::vector<vec3> &out_vertices,  std::vector<
                     break; // EOF = End Of File. Quit the loop.
                 else {
                     if ( strcmp( lineHeader, "v" ) == 0 ){
-                        vec3 vertex;
+                        glm::vec3 vertex;
                         fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
                         temp_vertices.push_back(vertex);
                     } else if ( strcmp( lineHeader, "vn" ) == 0 ){
-                        vec3 normal;
+                        glm::vec3 normal;
                         fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z );
                         temp_normals.push_back(normal);
                     } else if ( strcmp( lineHeader, "f" ) == 0 ){
@@ -74,7 +75,7 @@ void Sun::load(const char* path,  std::vector<vec3> &out_vertices,  std::vector<
             printf("V beginning! %d\n", vertexIndices.size());
             for( unsigned int i=0; i<vertexIndices.size(); i++ ) {
                  int vertexIndex = vertexIndices[i];
-                vec3 vertex = temp_vertices[ vertexIndex-1 ];
+                glm::vec3 vertex = temp_vertices[ vertexIndex-1 ];
                 out_vertices.push_back(vertex);
             }
             printf("V End!!!!!!!\n");
@@ -84,7 +85,7 @@ void Sun::load(const char* path,  std::vector<vec3> &out_vertices,  std::vector<
 void Sun::init() {
     
     load("/Users/unibodydesignn/Desktop/sp.obj", *vertices, *indices);
-    GLuint program = loader->initializeShaders("/Users/unibodydesignn/Desktop/spinning-solar-system/vertex.shader","/Users/unibodydesignn/Desktop/spinning-solar-system/fragment.shader");
+    GLuint program = shader->load("/Users/unibodydesignn/Desktop/spinning-solar-system/vertex.shader","/Users/unibodydesignn/Desktop/spinning-solar-system/fragment.shader");
     glUseProgram(program);
 
     glGenVertexArraysAPPLE(1, &vao);
@@ -92,7 +93,7 @@ void Sun::init() {
         
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(vec3), &vertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
 
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -104,6 +105,9 @@ void Sun::init() {
 }
 
 void Sun::draw() {
+    glBindVertexArrayAPPLE(vao);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     printf("drawing sphere! \n");
-    glDrawArrays(GL_LINES, 0, (int)vertices->size());
+    glDrawElements(GL_LINES, 12, GL_UNSIGNED_INT, 0);
+    //glDrawArrays(GL_LINES, 0, (int)vertices->size());
 }

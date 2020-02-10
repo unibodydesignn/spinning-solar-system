@@ -9,12 +9,11 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/0.9.9.3/include/glm/glm.hpp>
+#include <glm/0.9.9.3/include/glm/gtc/matrix_transform.hpp>
 
 #include <vector>
 
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods

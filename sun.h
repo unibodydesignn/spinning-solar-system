@@ -2,8 +2,8 @@
 #include <vector>
 #include <stdlib.h>
 #include <vector>
-#include "Angel.h"
-#include "loader.h"
+#include <glm/0.9.9.3/include/glm/glm.hpp>
+#include "shader.h"
 
 #define PI 3.14151967
 
@@ -23,19 +23,21 @@ private:
     float sectorCount;
     float stackCount;
 
-    vector<vec3> *vertices;
-    vector<vec3> *indices;
+    vector<glm::vec3> *vertices;
+    vector<glm::vec3> *indices;
 
     GLuint vao;
     GLuint vbo;
     GLuint ibo;
     
-    Loader *loader;
+    
 
 public:
     Sun();
     ~Sun();
-    void load(const char* path, std::vector<vec3> &out_vertices, std::vector<vec3> &out_normals);
+    void load(const char* path, std::vector<glm::vec3> &out_vertices, std::vector<glm::vec3> &out_normals);
     void init();
     void draw();
+
+    Shader *shader;
 };
