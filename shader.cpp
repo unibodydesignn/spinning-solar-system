@@ -6,7 +6,9 @@ Shader::Shader() {
 
 }
 
-Shader::~Shader() { }
+Shader::~Shader() { 
+
+}
 
 char* Shader::readShaderSource(const char* shaderFile)
 {
@@ -24,12 +26,13 @@ char* Shader::readShaderSource(const char* shaderFile)
     buf[size] = '\0';
     fclose(fp);
 
+    printf("shader in : %s \n", buf);
     return buf;
 }
 
 GLuint Shader::load(const char* vShaderFile, const char* fShaderFile) {
 
-  struct Shader {
+  struct Shaders {
 	const char*  filename;
 	GLenum       type;
 	GLchar*      source;
@@ -41,7 +44,7 @@ GLuint Shader::load(const char* vShaderFile, const char* fShaderFile) {
   GLuint program = glCreateProgram();
     
   for ( int i = 0; i < 2; ++i ) {
-	Shader& s = shaders[i];
+	Shaders& s = shaders[i];
 	s.source = readShaderSource( s.filename );
 	if ( shaders[i].source == NULL ) {
 	    cerr << "Failed to read " << s.filename << endl;
@@ -99,4 +102,8 @@ GLuint Shader::load(const char* vShaderFile, const char* fShaderFile) {
 void Shader::EditMatrix4(std::string m_name, glm::mat4 matrix) {
     int modelLoc = glGetUniformLocation(programID, m_name.c_str());
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+GLuint Shader::getProgramID() {
+	return programID;
 }

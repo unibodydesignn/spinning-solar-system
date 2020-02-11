@@ -80,6 +80,10 @@ void Sun::load(const char* path,  std::vector<glm::vec3> &out_vertices,  std::ve
             }
             printf("V End!!!!!!!\n");
         }
+
+        for(int i = 0; i < out_vertices.size(); i++) {
+            printf("X : %lf, Y : %lf, Z : %lf \n", out_vertices[i].x, out_vertices[i].y, out_vertices[i].z);
+        }
 }
 
 void Sun::init() {
@@ -87,7 +91,6 @@ void Sun::init() {
     load("/Users/unibodydesignn/Desktop/sp.obj", *vertices, *indices);
     GLuint program = shader->load("/Users/unibodydesignn/Desktop/spinning-solar-system/vertex.shader","/Users/unibodydesignn/Desktop/spinning-solar-system/fragment.shader");
     glUseProgram(program);
-
     glGenVertexArraysAPPLE(1, &vao);
     glBindVertexArrayAPPLE(vao);
         
@@ -95,19 +98,19 @@ void Sun::init() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * 9, indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-
+    GLuint vPosition = glGetAttribLocation( program, "vPosition" );
+    glEnableVertexAttribArray( vPosition );
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
+    
 }
 
 void Sun::draw() {
     glBindVertexArrayAPPLE(vao);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     printf("drawing sphere! \n");
-    glDrawElements(GL_LINES, 12, GL_UNSIGNED_INT, 0);
-    //glDrawArrays(GL_LINES, 0, (int)vertices->size());
+    glDrawArrays(GL_LINES, 0, (int)vertices->size());
+}
+
+void Sun::calculateTransformation(glm::mat4& modelMatrix) {
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(0.5f), glm::vec3(1.0f, 0.0f, 0.0f));
 }

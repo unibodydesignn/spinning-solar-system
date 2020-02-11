@@ -33,8 +33,8 @@
 
 #ifdef __APPLE__  // include Mac OS X verions of headers
 //#  include <OpenGL/OpenGL.h>
-//#  include <GL/glew.h>
-//#  include <GL/glext.h>
+#  include <GL/glew.h>
+#  include <GL/glext.h>
 #  include <GLUT/glut.h>
 #else // non-Mac OS X operating systems
 //#  include <GL/freeglut.h>

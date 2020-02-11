@@ -1,7 +1,4 @@
 #include <iostream>
-#include <GLUT/glut.h>
-#include <GLFW/glfw3.h>
-
 #include "Angel.h"
 #include "CheckError.h"
 
@@ -32,7 +29,7 @@ void init() {
     sun = new Sun();
     sun->init();
 
-    camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+    camera = new Camera(glm::vec3(0.0f, 0.0f, 1.0f));
     lastX = 1920 / 2;
     lastY = 1080 / 2;
     firstMouse = false;
@@ -41,7 +38,15 @@ void init() {
 
 }
 
+void doModelTranslation(glm::mat4& modelMatrix) {
+    sun->calculateTransformation(modelMatrix);
+}
+
 void initializeSpaceLayout(void) {
+
+    glUseProgram(sun->shader->getProgramID());
+
+    glEnable( GL_DEPTH_TEST );
     glViewport(0, 0, WW, WH);
 
     glMatrixMode(GL_PROJECTION);
@@ -52,7 +57,8 @@ void initializeSpaceLayout(void) {
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
 
-    glEnable( GL_DEPTH_TEST );
+    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor( 0.0, 0.0, 0.0, 1.0 );
 
     model = glm::mat4(1.0f);
@@ -63,21 +69,27 @@ void initializeSpaceLayout(void) {
 
 void displaySystem() {
 
+    glEnable( GL_DEPTH_TEST );
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     deltaTime = 0.5;
 
+    doModelTranslation(model);
     view  = camera->GetViewMatrix();
     projection = glm::perspective(camera->GetZoom(), (float) 1920 / (float) 1080, 0.1f, 1000.0f);
     mvp = projection * view * model;
-
+    
     sun->shader->EditMatrix4("mvp", mvp);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(sun->shader->getProgramID());
+    
     sun->draw();
+
     glutSwapBuffers();
 }
 
-void controlSpaceWithMouse(int xPos, int yPos) {
-    if( firstMouse )
+void controlSpaceWithMouse(int btn, int st, int xPos, int yPos) {
+    if (btn == GLUT_LEFT_BUTTON && st == GLUT_DOWN) {
+        if( firstMouse )
         {
             lastX = xPos;
             lastY = yPos;
@@ -92,29 +104,43 @@ void controlSpaceWithMouse(int xPos, int yPos) {
         
         camera->ProcessMouseMovement( xOffset, yOffset );
 
-        printf("MOUSE X : %d   Y : %d \n", xPos, yPos);
-
+        //printf("MOUSE X : %d   Y : %d \n", xPos, yPos);
+    }
 }
 
 void keyboardInput(unsigned char key, int x, int y) {
-    printf("Mouse coordinates when button pressed : %d %d\n",x, y);
+    if( key == 'W' ) {
+        camera->ProcessKeyboard( FORWARD, deltaTime );
+    }
+    
+    if( key == 'S'  ) {
+        camera->ProcessKeyboard( BACKWARD, deltaTime );
+    }
+    
+    if( key == 'A' ) {
+        camera->ProcessKeyboard( LEFT, deltaTime );
+    }
+    
+    if( key == 'D' ) {
+        camera->ProcessKeyboard( RIGHT, deltaTime );
+    }
 }
 
 void scrollCallback(int xPos, int yPos, int zPos) {
-    camera->ProcessMouseScroll( yPos );
+    printf("x %d y %d z %d \n", xPos, yPos, zPos);
+    camera->ProcessMouseScroll( zPos );
 }
 
 /**
  *
- * This is where magic happens.
+ * This is where magic happencls.
  * Magic of glutMainLoop.
  *
  * */
 int main(int argc, char** argv) {
 
-    
    glutInit(&argc, argv);
-   glutInitDisplayMode(GLUT_DEPTH |GLUT_DOUBLE | GLUT_RGB);
+   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
    glutInitDisplayMode(GLUT_3_2_CORE_PROFILE);
    glutInitWindowSize(WW, WH);
    glutInitWindowPosition(0,0);
@@ -122,11 +148,13 @@ int main(int argc, char** argv) {
 
    init();
 
+   glewExperimental = GL_TRUE;
+    glewInit();
+
    initializeSpaceLayout();
-   glutPassiveMotionFunc(controlSpaceWithMouse);
+   glutMouseFunc(controlSpaceWithMouse);
    glutDisplayFunc(displaySystem);
    glutSpaceballMotionFunc(scrollCallback);
    glutKeyboardFunc(keyboardInput);
-
    glutMainLoop();
 }

@@ -13,6 +13,7 @@ public:
     char* readShaderSource(const char* shaderFile);
     GLuint load(const char* vShaderFile, const char* fShaderFile);
     void EditMatrix4(std::string m_name, glm::mat4 matrix);
+    GLuint getProgramID();
 
 private:
     GLuint programID;
